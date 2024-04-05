@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TO-DOs List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        .bg-color1 {
+            background: rgb(2, 0, 36);
+            background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(33, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+        }
+    </style>
+</head>
+
+<body style="background-image: url(bg1.jpg);">
+    <!-- code block of navbar -->
+    <nav class="navbar bg-body-tertiary, bg-color1"
+        style="background-image: url(bg1.jpg); box-shadow: 2px 2px 2px rgb(94, 94, 159);">
+        <div class="container-fluid">
+            <a class="navbar-brand" style="font-size: 24px; color: rgb(40, 5, 117);"><b>To-Do List</b></a>
+            <form class="d-flex" role="search">
+                <button class="btn btn-outline-success" type="submit"
+                    style="background-color: white; color: black;">Save-Work</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- code block of taking input for to do list -->
+    <div class="container"
+        style="border: 3px solid rgb(255, 255, 255); padding: 20px 20px; width: 80%; margin-left: 10%; margin-top: 40px; border-radius: 20px; box-shadow: 2px 2px 2px rgb(94, 94, 159)">
+        <h2 class="text-center" style="color: rgb(111, 21, 21);">Add tasks in ToDo List</h2>
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Title of the Task</label>
+            <input type="text" class="form-control" id="title" aria-describedby="emailHelp">
+            <div id="emailHelp" class="form-text">Enter your task</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description"></textarea>
+        </div>
+        <button type="submit" id="add" class="btn btn-primary">Add to list</button>
+        <button  id="clear" class="btn btn-primary" onclick="clearstorage()">Clear list</button>
+
+    </div>
+
+    <!-- code block of to do list display -->
+    <div class="container"
+        style=" background-color: white; border: 3px solid rgb(255, 255, 255); padding: 20px 20px; width: 80%; margin-left: 10%; margin-top: 40px; margin-bottom: 60px; border-radius: 20px; box-shadow: 2px 2px 2px rgb(94, 94, 159)">
+        <div id="items">
+            <h2 class="text-center" style="font-size: 27px; margin-top: 10px;"> My Personalized ToDo List </h2>
+        </div>
+        <table class="table" style="border-radius: 10px;">
+            <thead>
+                <tr>
+                    <th scope="col">SNo</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Check Emails</td>
+                    <td>First I will check my emails for any important work</td>
+                    <td><button class="btn btn-sm btn-primary">Delete</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+    <!-- code block for action when u click on add to list button i.e, adding the input to list -->
+
+
+
+    <script>
+
+        function getAndUpdate() {
+            console.log("Updating the ToDo List...");
+
+            task_title = document.getElementById('title').value;
+            task_description = document.getElementById('description').value;
+
+            if (localStorage.getItem('itemsJson') == null) {
+                itemJsonArray = [];
+                itemJsonArray.push(task_title, task_description);
+                localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            }else {
+                itemJsonArrayStr = localStorage.getItem('itemsJson');
+                itemJsonArray = JSON.parse(itemJsonArrayStr);
+                itemJsonArray.push([task_title, task_description]);
+                localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            }
+            update();
+        }
+
+        function update() {
+            if (localStorage.getItem('itemsJson') == null) {
+                itemJsonArray = [];
+                localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            }else {
+                itemJsonArrayStr = localStorage.getItem('itemsJson');
+                itemJsonArray = JSON.parse(itemJsonArrayStr);
+            }
+            //Populate the table
+            let tableBody = document.getElementById("tableBody");
+            let str = "";
+            itemJsonArray.forEach((element, index) => {
+                str += `
+                <tr>
+                    <th scope="row">${index + 1}</th>
+                    <td>${element[0]}</td>
+                    <td>${element[1]}</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="deleted(${index})">Delete</button></td>
+                </tr>`;
+            });
+            tableBody.innerHTML = str;
+        }
+
+        add = document.getElementById("add");
+        add.addEventListener("click", getAndUpdate);
+        update();
+
+        function deleted(itemIndex) {
+            console.log("Delete", itemIndex)
+            itemJsonArrayStr = localStorage.getItem('itemsJson');
+            itemJsonArray = JSON.parse(itemJsonArrayStr);
+            //delete itemIndex element from the array
+            itemJsonArray.splice(itemIndex, 1);
+            localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+            update();
+        }
+
+        function clearstorage(){
+            if(confirm("Do you really want to clear your ToDo List ?")){
+                localStorage.clear();
+                console.log("Clearing the storage");
+                update();
+            }
+        }
+
+    </script>
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
